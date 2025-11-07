@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>生成插件图标</title>
+</head>
+<body>
+    <h2>B站自动最高清晰度插件图标生成器</h2>
+    <p>请将下面的canvas内容保存为对应大小的PNG图片：</p>
+    
+    <div>
+        <h3>icon16.png (16x16)</h3>
+        <canvas id="icon16" width="16" height="16"></canvas>
+    </div>
+    
+    <div>
+        <h3>icon48.png (48x48)</h3>
+        <canvas id="icon48" width="48" height="48"></canvas>
+    </div>
+    
+    <div>
+        <h3>icon128.png (128x128)</h3>
+        <canvas id="icon128" width="128" height="128"></canvas>
+    </div>
+    
+    <script>
+        function drawIcon(canvasId, size) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            
+            // 背景渐变
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#00a1d6');
+            gradient.addColorStop(1, '#0084b4');
+            
+            // 绘制圆角矩形背景
+            ctx.fillStyle = gradient;
+            const radius = size * 0.15;
+            ctx.beginPath();
+            ctx.moveTo(radius, 0);
+            ctx.lineTo(size - radius, 0);
+            ctx.quadraticCurveTo(size, 0, size, radius);
+            ctx.lineTo(size, size - radius);
+            ctx.quadraticCurveTo(size, size, size - radius, size);
+            ctx.lineTo(radius, size);
+            ctx.quadraticCurveTo(0, size, 0, size - radius);
+            ctx.lineTo(0, radius);
+            ctx.quadraticCurveTo(0, 0, radius, 0);
+            ctx.fill();
+            
+            // 绘制HD文字
+            ctx.fillStyle = 'white';
+            ctx.font = `bold ${size * 0.35}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('HD', size / 2, size * 0.35);
+
+            // 绘制向上箭头（下移）
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = size * 0.06;
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            ctx.moveTo(size * 0.3, size * 0.70);
+            ctx.lineTo(size * 0.5, size * 0.52);
+            ctx.lineTo(size * 0.7, size * 0.70);
+            ctx.stroke();
+
+            // 绘制底部署名
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.font = `${size * 0.12}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'bottom';
+            ctx.fillText('By HOHO``', size / 2, size * 0.95);
+        }
+        
+        // 生成三个尺寸的图标
+        drawIcon('icon16', 16);
+        drawIcon('icon48', 48);
+        drawIcon('icon128', 128);
+        
+        // 添加下载功能
+        document.querySelectorAll('canvas').forEach(canvas => {
+            canvas.style.border = '1px solid #ccc';
+            canvas.style.margin = '10px';
+            canvas.style.cursor = 'pointer';
+            canvas.title = '点击下载';
+            
+            canvas.addEventListener('click', function() {
+                const link = document.createElement('a');
+                link.download = canvas.id + '.png';
+                link.href = canvas.toDataURL();
+                link.click();
+            });
+        });
+    </script>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        div {
+            margin: 20px 0;
+        }
+        canvas {
+            display: block;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+    </style>
+</body>
+</html>
