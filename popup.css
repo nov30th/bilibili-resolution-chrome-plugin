@@ -191,6 +191,20 @@ input:checked + .slider:before {
 .version {
   font-size: 11px;
   color: #bbb;
+  margin-bottom: 8px;
+}
+
+.feedback-link {
+  display: inline-block;
+  color: #00a1d6;
+  font-size: 12px;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.feedback-link:hover {
+  color: #0084b4;
+  text-decoration: underline;
 }
 
 /* 动画效果 */

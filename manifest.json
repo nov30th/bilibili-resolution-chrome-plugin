@@ -4,7 +4,6 @@
   "version": "1.0.0",
   "description": "自动选择B站视频最高清晰度",
   "author": "Nov30th, HOHO``",
-  "author_email": "nov30th@gmail.com",
   "homepage_url": "https://github.com/nov30th/bilibili-resolution-chrome-plugin",
   "permissions": [
     "storage",
