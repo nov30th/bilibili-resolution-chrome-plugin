@@ -31,9 +31,9 @@
     "message": "Auto-runs on Bilibili video pages",
     "description": "Footer text about auto-run"
   },
-  "footerVersion": {
-    "message": "Version 1.0.0",
-    "description": "Version text"
+  "footerVersionLabel": {
+    "message": "Version",
+    "description": "Version label text"
   },
   "footerFeedback": {
     "message": "Feedback",

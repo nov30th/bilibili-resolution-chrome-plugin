@@ -31,9 +31,9 @@
     "message": "在B站视频页面自动运行",
     "description": "Footer text about auto-run"
   },
-  "footerVersion": {
-    "message": "版本 1.0.0",
-    "description": "Version text"
+  "footerVersionLabel": {
+    "message": "版本",
+    "description": "Version label text"
   },
   "footerFeedback": {
     "message": "问题反馈",

@@ -19,6 +19,11 @@ document.addEventListener('DOMContentLoaded', function() {
   // Initialize i18n translations
   initializeI18n();
 
+  // Set version from manifest
+  const manifest = chrome.runtime.getManifest();
+  const versionElement = document.getElementById('version');
+  versionElement.textContent = chrome.i18n.getMessage('footerVersionLabel') + ' ' + manifest.version;
+
   const enableVipQuality = document.getElementById('enableVipQuality');
   const manualSelectBtn = document.getElementById('manualSelect');
   const statusElement = document.getElementById('status');
