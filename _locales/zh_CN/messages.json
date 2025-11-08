@@ -1,0 +1,174 @@
+{
+  "extName": {
+    "message": "B站自动最高清晰度",
+    "description": "Extension name"
+  },
+  "extDescription": {
+    "message": "自动选择B站视频最高清晰度",
+    "description": "Extension description"
+  },
+  "enableVipQualityLabel": {
+    "message": "选择会员最高清晰度",
+    "description": "Label for VIP quality toggle"
+  },
+  "statusEnabled": {
+    "message": "插件已启用",
+    "description": "Status when plugin is enabled"
+  },
+  "descriptionOn": {
+    "message": "开启后：选择包括大会员清晰度在内的最高画质",
+    "description": "Description when VIP quality is enabled"
+  },
+  "descriptionOff": {
+    "message": "关闭后：选择非会员可用的最高画质",
+    "description": "Description when VIP quality is disabled"
+  },
+  "btnManualSelect": {
+    "message": "立即选择最高清晰度",
+    "description": "Manual selection button text"
+  },
+  "footerAutoRun": {
+    "message": "在B站视频页面自动运行",
+    "description": "Footer text about auto-run"
+  },
+  "footerVersion": {
+    "message": "版本 1.0.0",
+    "description": "Version text"
+  },
+  "footerFeedback": {
+    "message": "问题反馈",
+    "description": "Feedback link text"
+  },
+  "footerPolicy": {
+    "message": "商店政策",
+    "description": "Policy link text"
+  },
+  "settingSaved": {
+    "message": "设置已保存",
+    "description": "Message when setting is saved"
+  },
+  "vipQualityEnabled": {
+    "message": "已开启会员清晰度",
+    "description": "Message when VIP quality is enabled"
+  },
+  "vipQualityDisabled": {
+    "message": "已关闭会员清晰度",
+    "description": "Message when VIP quality is disabled"
+  },
+  "executing": {
+    "message": "正在执行...",
+    "description": "Executing status"
+  },
+  "notBilibiliPage": {
+    "message": "请在B站视频页面使用",
+    "description": "Message when not on Bilibili video page"
+  },
+  "notOnBilibiliPage": {
+    "message": "不在B站视频页面",
+    "description": "Status when not on Bilibili video page"
+  },
+  "sendMessageFailed": {
+    "message": "发送消息失败",
+    "description": "Error message when sending message fails"
+  },
+  "executionFailed": {
+    "message": "执行失败，请刷新页面后重试",
+    "description": "Error message when execution fails"
+  },
+  "executionFailedShort": {
+    "message": "执行失败",
+    "description": "Short error message when execution fails"
+  },
+  "selectingQuality": {
+    "message": "正在选择最高清晰度...",
+    "description": "Status when selecting quality"
+  },
+  "executionInProgress": {
+    "message": "正在执行",
+    "description": "Status when execution is in progress"
+  },
+  "pluginLoaded": {
+    "message": "B站自动最高清晰度插件已加载",
+    "description": "Console message when plugin loads"
+  },
+  "qualityBtnNotFound": {
+    "message": "未找到清晰度按钮",
+    "description": "Console message when quality button not found"
+  },
+  "qualityMenuNotFound": {
+    "message": "未找到清晰度菜单",
+    "description": "Console message when quality menu not found"
+  },
+  "qualityOptionsNotFound": {
+    "message": "未找到清晰度选项",
+    "description": "Console message when quality options not found"
+  },
+  "noSuitableQuality": {
+    "message": "未找到合适的清晰度选项",
+    "description": "Console message when no suitable quality found"
+  },
+  "alreadyHighestQuality": {
+    "message": "已经是最高清晰度",
+    "description": "Console message when already at highest quality"
+  },
+  "switchedToQuality": {
+    "message": "已切换到清晰度",
+    "description": "Console message when switched to quality"
+  },
+  "selectFailedRetry": {
+    "message": "选择失败，$1ms 后重试 ($2/$3)",
+    "description": "Console message when selection fails and will retry",
+    "placeholders": {
+      "interval": {
+        "content": "$1",
+        "example": "1000"
+      },
+      "current": {
+        "content": "$2",
+        "example": "1"
+      },
+      "max": {
+        "content": "$3",
+        "example": "10"
+      }
+    }
+  },
+  "playerNotReadyRetry": {
+    "message": "播放器未就绪，$1ms 后重试 ($2/$3)",
+    "description": "Console message when player not ready and will retry",
+    "placeholders": {
+      "interval": {
+        "content": "$1",
+        "example": "1000"
+      },
+      "current": {
+        "content": "$2",
+        "example": "1"
+      },
+      "max": {
+        "content": "$3",
+        "example": "10"
+      }
+    }
+  },
+  "playerLoadTimeout": {
+    "message": "播放器加载超时",
+    "description": "Console message when player load times out"
+  },
+  "playerDetected": {
+    "message": "检测到播放器加载",
+    "description": "Console message when player is detected"
+  },
+  "configLoaded": {
+    "message": "配置已加载",
+    "description": "Console message when config is loaded"
+  },
+  "configUpdated": {
+    "message": "配置已更新",
+    "description": "Console message when config is updated"
+  },
+  "videoSwitchDetected": {
+    "message": "检测到视频切换",
+    "description": "Console message when video switch is detected"
+  }
+}

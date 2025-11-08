@@ -1,7 +1,7 @@
 // content.js
 // B站自动最高清晰度选择器
 
-console.log('B站自动最高清晰度插件已加载');
+console.log(chrome.i18n.getMessage('pluginLoaded'));
 
 // 配置默认值
 let config = {
@@ -16,7 +16,7 @@ chrome.storage.sync.get(['enableVipQuality'], (result) => {
   if (result.enableVipQuality !== undefined) {
     config.enableVipQuality = result.enableVipQuality;
   }
-  console.log('配置已加载:', config);
+  console.log(chrome.i18n.getMessage('configLoaded') + ':', config);
   startObserving();
 });
 
@@ -24,19 +24,19 @@ chrome.storage.sync.get(['enableVipQuality'], (result) => {
 function selectHighestQuality() {
   const qualityBtn = document.querySelector('.bpx-player-ctrl-quality');
   if (!qualityBtn) {
-    console.log('未找到清晰度按钮');
+    console.log(chrome.i18n.getMessage('qualityBtnNotFound'));
     return false;
   }
 
   const qualityMenu = document.querySelector('.bpx-player-ctrl-quality-menu');
   if (!qualityMenu) {
-    console.log('未找到清晰度菜单');
+    console.log(chrome.i18n.getMessage('qualityMenuNotFound'));
     return false;
   }
 
   const menuItems = qualityMenu.querySelectorAll('.bpx-player-ctrl-quality-menu-item');
   if (menuItems.length === 0) {
-    console.log('未找到清晰度选项');
+    console.log(chrome.i18n.getMessage('qualityOptionsNotFound'));
     return false;
   }
 
@@ -68,13 +68,13 @@ function selectHighestQuality() {
   }
   
   if (!targetItem) {
-    console.log('未找到合适的清晰度选项');
+    console.log(chrome.i18n.getMessage('noSuitableQuality'));
     return false;
   }
-  
+
   // 如果目标清晰度已经是当前清晰度，则不需要切换
   if (highestValue === currentValue) {
-    console.log('已经是最高清晰度:', targetItem.querySelector('.bpx-player-ctrl-quality-text').innerText);
+    console.log(chrome.i18n.getMessage('alreadyHighestQuality') + ':', targetItem.querySelector('.bpx-player-ctrl-quality-text').innerText);
     return true;
   }
   
@@ -89,8 +89,8 @@ function selectHighestQuality() {
   // 延迟后点击目标清晰度
   setTimeout(() => {
     targetItem.click();
-    console.log('已切换到清晰度:', targetItem.querySelector('.bpx-player-ctrl-quality-text').innerText);
-    
+    console.log(chrome.i18n.getMessage('switchedToQuality') + ':', targetItem.querySelector('.bpx-player-ctrl-quality-text').innerText);
+
     // 关闭菜单
     const mouseLeaveEvent = new MouseEvent('mouseleave', {
       view: window,
@@ -99,7 +99,7 @@ function selectHighestQuality() {
     });
     qualityBtn.dispatchEvent(mouseLeaveEvent);
   }, 100);
-  
+
   return true;
 }
 
@@ -115,15 +115,15 @@ function waitAndSelectQuality(retryCount = 0) {
     setTimeout(() => {
       const success = selectHighestQuality();
       if (!success && config.autoRetry && retryCount < config.maxRetries) {
-        console.log(`选择失败，${config.retryInterval}ms 后重试 (${retryCount + 1}/${config.maxRetries})`);
+        console.log(chrome.i18n.getMessage('selectFailedRetry', [config.retryInterval.toString(), (retryCount + 1).toString(), config.maxRetries.toString()]));
         setTimeout(() => waitAndSelectQuality(retryCount + 1), config.retryInterval);
       }
     }, 1000);
   } else if (config.autoRetry && retryCount < config.maxRetries) {
-    console.log(`播放器未就绪，${config.retryInterval}ms 后重试 (${retryCount + 1}/${config.maxRetries})`);
+    console.log(chrome.i18n.getMessage('playerNotReadyRetry', [config.retryInterval.toString(), (retryCount + 1).toString(), config.maxRetries.toString()]));
     setTimeout(() => waitAndSelectQuality(retryCount + 1), config.retryInterval);
   } else {
-    console.log('播放器加载超时');
+    console.log(chrome.i18n.getMessage('playerLoadTimeout'));
   }
 }
 
@@ -139,10 +139,10 @@ function startObserving() {
       if (mutation.type === 'childList') {
         for (let node of mutation.addedNodes) {
           if (node.nodeType === Node.ELEMENT_NODE) {
-            if (node.classList && 
-                (node.classList.contains('bpx-player-container') || 
+            if (node.classList &&
+                (node.classList.contains('bpx-player-container') ||
                  node.querySelector && node.querySelector('.bpx-player-container'))) {
-              console.log('检测到播放器加载');
+              console.log(chrome.i18n.getMessage('playerDetected'));
               setTimeout(() => waitAndSelectQuality(), 1000);
               return;
             }
@@ -151,30 +151,30 @@ function startObserving() {
       }
     }
   });
-  
+
   // 开始监听
   observer.observe(document.body, {
     childList: true,
     subtree: true
   });
-  
+
   // 监听配置更新
   chrome.storage.onChanged.addListener((changes, namespace) => {
     if (namespace === 'sync' && changes.enableVipQuality) {
       config.enableVipQuality = changes.enableVipQuality.newValue;
-      console.log('配置已更新:', config);
+      console.log(chrome.i18n.getMessage('configUpdated') + ':', config);
       // 配置更新后重新选择清晰度
       waitAndSelectQuality();
     }
   });
-  
+
   // 处理视频切换（在同一页面内切换视频）
   let lastUrl = location.href;
   const urlObserver = new MutationObserver(() => {
     const url = location.href;
     if (url !== lastUrl) {
       lastUrl = url;
-      console.log('检测到视频切换');
+      console.log(chrome.i18n.getMessage('videoSwitchDetected'));
       setTimeout(() => waitAndSelectQuality(), 2000);
     }
   });

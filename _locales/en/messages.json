@@ -1,0 +1,174 @@
+{
+  "extName": {
+    "message": "Bilibili Auto Highest Quality",
+    "description": "Extension name"
+  },
+  "extDescription": {
+    "message": "Automatically select the highest video quality on Bilibili",
+    "description": "Extension description"
+  },
+  "enableVipQualityLabel": {
+    "message": "Select VIP highest quality",
+    "description": "Label for VIP quality toggle"
+  },
+  "statusEnabled": {
+    "message": "Extension enabled",
+    "description": "Status when plugin is enabled"
+  },
+  "descriptionOn": {
+    "message": "When enabled: Select the highest quality including VIP options",
+    "description": "Description when VIP quality is enabled"
+  },
+  "descriptionOff": {
+    "message": "When disabled: Select the highest non-VIP quality",
+    "description": "Description when VIP quality is disabled"
+  },
+  "btnManualSelect": {
+    "message": "Select Highest Quality Now",
+    "description": "Manual selection button text"
+  },
+  "footerAutoRun": {
+    "message": "Auto-runs on Bilibili video pages",
+    "description": "Footer text about auto-run"
+  },
+  "footerVersion": {
+    "message": "Version 1.0.0",
+    "description": "Version text"
+  },
+  "footerFeedback": {
+    "message": "Feedback",
+    "description": "Feedback link text"
+  },
+  "footerPolicy": {
+    "message": "Store Policy",
+    "description": "Policy link text"
+  },
+  "settingSaved": {
+    "message": "Settings saved",
+    "description": "Message when setting is saved"
+  },
+  "vipQualityEnabled": {
+    "message": "VIP quality enabled",
+    "description": "Message when VIP quality is enabled"
+  },
+  "vipQualityDisabled": {
+    "message": "VIP quality disabled",
+    "description": "Message when VIP quality is disabled"
+  },
+  "executing": {
+    "message": "Executing...",
+    "description": "Executing status"
+  },
+  "notBilibiliPage": {
+    "message": "Please use on Bilibili video pages",
+    "description": "Message when not on Bilibili video page"
+  },
+  "notOnBilibiliPage": {
+    "message": "Not on Bilibili video page",
+    "description": "Status when not on Bilibili video page"
+  },
+  "sendMessageFailed": {
+    "message": "Failed to send message",
+    "description": "Error message when sending message fails"
+  },
+  "executionFailed": {
+    "message": "Execution failed, please refresh the page and try again",
+    "description": "Error message when execution fails"
+  },
+  "executionFailedShort": {
+    "message": "Execution failed",
+    "description": "Short error message when execution fails"
+  },
+  "selectingQuality": {
+    "message": "Selecting highest quality...",
+    "description": "Status when selecting quality"
+  },
+  "executionInProgress": {
+    "message": "Executing",
+    "description": "Status when execution is in progress"
+  },
+  "pluginLoaded": {
+    "message": "Bilibili Auto Highest Quality plugin loaded",
+    "description": "Console message when plugin loads"
+  },
+  "qualityBtnNotFound": {
+    "message": "Quality button not found",
+    "description": "Console message when quality button not found"
+  },
+  "qualityMenuNotFound": {
+    "message": "Quality menu not found",
+    "description": "Console message when quality menu not found"
+  },
+  "qualityOptionsNotFound": {
+    "message": "Quality options not found",
+    "description": "Console message when quality options not found"
+  },
+  "noSuitableQuality": {
+    "message": "No suitable quality option found",
+    "description": "Console message when no suitable quality found"
+  },
+  "alreadyHighestQuality": {
+    "message": "Already at highest quality",
+    "description": "Console message when already at highest quality"
+  },
+  "switchedToQuality": {
+    "message": "Switched to quality",
+    "description": "Console message when switched to quality"
+  },
+  "selectFailedRetry": {
+    "message": "Selection failed, retrying in $1ms ($2/$3)",
+    "description": "Console message when selection fails and will retry",
+    "placeholders": {
+      "interval": {
+        "content": "$1",
+        "example": "1000"
+      },
+      "current": {
+        "content": "$2",
+        "example": "1"
+      },
+      "max": {
+        "content": "$3",
+        "example": "10"
+      }
+    }
+  },
+  "playerNotReadyRetry": {
+    "message": "Player not ready, retrying in $1ms ($2/$3)",
+    "description": "Console message when player not ready and will retry",
+    "placeholders": {
+      "interval": {
+        "content": "$1",
+        "example": "1000"
+      },
+      "current": {
+        "content": "$2",
+        "example": "1"
+      },
+      "max": {
+        "content": "$3",
+        "example": "10"
+      }
+    }
+  },
+  "playerLoadTimeout": {
+    "message": "Player load timeout",
+    "description": "Console message when player load times out"
+  },
+  "playerDetected": {
+    "message": "Player detected loading",
+    "description": "Console message when player is detected"
+  },
+  "configLoaded": {
+    "message": "Configuration loaded",
+    "description": "Console message when config is loaded"
+  },
+  "configUpdated": {
+    "message": "Configuration updated",
+    "description": "Console message when config is updated"
+  },
+  "videoSwitchDetected": {
+    "message": "Video switch detected",
+    "description": "Console message when video switch is detected"
+  }
+}
