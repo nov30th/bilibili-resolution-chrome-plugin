@@ -11,43 +11,52 @@
     return loc.host === 'www.douyin.com';
   }
 
-  // Parse the largest "<num>P" found in the item's text.
-  // Returns -1 if none — caller will skip those.
+  // Parse a tier-rank score from item text. Higher = clearer.
+  // - "4K" / "2K" / "<N>K"  → N * 540 (4K≈2160p, 2K≈1440p — vertical-pixel approximation)
+  // - "1080P" / "720P" / ... → the numeric value
+  // - "智能" (auto)          → -2 (always skip)
+  // - anything else          → -1 (unparseable, skip)
   function parseTier(text) {
     const t = (text || '').trim();
-    if (t.includes('智能')) return -2; // explicit auto, skip
-    const m = t.match(/(\d{3,4})\s*P/i);
-    if (m) return parseInt(m[1], 10);
+    if (t.includes('智能')) return -2;
+    const kMatch = t.match(/(\d+)\s*K\b/i);
+    if (kMatch) return parseInt(kMatch[1], 10) * 540;
+    const pMatch = t.match(/(\d{3,4})\s*P/i);
+    if (pMatch) return parseInt(pMatch[1], 10);
     return -1;
   }
 
   function selectForOne(settingEl) {
-    // Find items inside this setting's dropdown.
     const items = settingEl.querySelectorAll('.item');
     if (!items.length) return false;
 
-    let target = null;
     let bestTier = -1;
+    let bestItem = null;
+    let currentTier = -1;
+
     for (const item of items) {
       const tier = parseTier(item.textContent);
-      if (tier < 0) continue; // skip 智能 / unparseable
-      if (item.classList.contains('selected')) continue;
+      if (tier < 0) continue;
+      if (item.classList.contains('selected')) {
+        currentTier = tier;
+      }
       if (tier > bestTier) {
         bestTier = tier;
-        target = item;
+        bestItem = item;
       }
     }
 
-    if (!target) return false;
+    if (!bestItem) return false;
+    // Already at the highest tier — don't click (no downgrade, no noise).
+    if (currentTier >= bestTier) return false;
 
-    // Open the dropdown via hover, then click.
     settingEl.dispatchEvent(new MouseEvent('mouseover', { view: window, bubbles: true }));
     settingEl.dispatchEvent(new MouseEvent('mouseenter', { view: window, bubbles: true }));
     setTimeout(() => {
-      target.click();
+      bestItem.click();
       console.log(
         chrome.i18n.getMessage('switchedToQualityDouyinVideo') + ':',
-        (target.textContent || '').trim()
+        (bestItem.textContent || '').trim()
       );
       settingEl.dispatchEvent(new MouseEvent('mouseleave', { view: window, bubbles: true }));
     }, 150);
