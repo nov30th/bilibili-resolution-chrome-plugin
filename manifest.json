@@ -11,7 +11,8 @@
     "activeTab"
   ],
   "host_permissions": [
-    "https://www.bilibili.com/*"
+    "https://www.bilibili.com/*",
+    "https://www.douyin.com/*"
   ],
   "action": {
     "default_popup": "popup.html",
@@ -25,6 +26,11 @@
     {
       "matches": ["https://www.bilibili.com/video/*"],
       "js": ["common/retry.js", "adapters/bilibili.js", "content.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://www.douyin.com/*"],
+      "js": ["common/retry.js", "adapters/douyin-video.js", "content.js"],
       "run_at": "document_idle"
     }
   ],
