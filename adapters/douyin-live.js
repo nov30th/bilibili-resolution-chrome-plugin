@@ -6,8 +6,12 @@
   const TOGGLE_KEY = 'enableDouyinLive';
   const PLATFORM_MSG_KEY = 'platformDouyinLive';
 
-  // Priority order: highest first. Auto (自动/智能) is intentionally absent.
-  const TIER_PRIORITY = ['原画', '蓝光', '超清', '高清', '标清', '流畅'];
+  // Known Douyin live tier labels. Used as an allowlist when scanning the
+  // dropdown — class names inside the menu are obfuscated and unstable, so
+  // we filter by exact text content. Add new names here if Douyin ships a
+  // tier label that isn't on this list. Order in this list does NOT matter:
+  // the menu itself is rendered in priority order and we pick by DOM order.
+  const TIER_NAMES = new Set(['原画', '蓝光', '超清', '高清', '标清', '流畅']);
 
   function matches(loc) {
     if (loc.host !== 'live.douyin.com') return false;
@@ -15,22 +19,22 @@
     return loc.pathname.length > 1;
   }
 
-  function getCurrentTierText(container) {
-    return (container.textContent || '').trim();
-  }
-
   function collectMenuItems(container) {
-    // Inside the now-open dropdown, find leaf-ish elements whose text
-    // exactly matches one of the known tier names and that look interactive.
+    // Inside the open dropdown, find leaf-ish elements whose text exactly
+    // matches one of the known tier labels. Returns items in DOM order —
+    // first entry is the highest tier per Douyin's layout.
     const all = container.querySelectorAll('*');
+    const seen = new Set();
     const matched = [];
     for (const el of all) {
       const text = (el.textContent || '').trim();
-      if (!TIER_PRIORITY.includes(text)) continue;
+      if (!TIER_NAMES.has(text)) continue;
       if (el.children.length > 1) continue;
+      if (seen.has(text)) continue; // dedup nested wrappers with same text
       const r = el.getBoundingClientRect();
       if (r.width <= 0 || r.height <= 0) continue;
       if (r.width > 200) continue; // skip suspiciously wide containers
+      seen.add(text);
       matched.push({ el, text });
     }
     return matched;
@@ -43,30 +47,19 @@
       return false;
     }
 
-    const current = getCurrentTierText(container);
+    const current = (container.textContent || '').trim();
 
-    // Open the dropdown.
     container.dispatchEvent(new MouseEvent('mouseover', { view: window, bubbles: true }));
     container.dispatchEvent(new MouseEvent('mouseenter', { view: window, bubbles: true }));
 
     setTimeout(() => {
       const items = collectMenuItems(container.parentElement || container);
-      // Pick the highest-priority tier that isn't the current one.
-      let target = null;
-      for (const tierName of TIER_PRIORITY) {
-        const hit = items.find(i => i.text === tierName);
-        if (!hit) continue;
-        if (tierName === current) {
-          // Already at this tier — and nothing higher exists in the menu
-          // (because we iterate priority top-down and this is the first match).
-          break;
-        }
-        target = hit;
-        break;
-      }
-
+      // First item in DOM order = highest tier on Douyin's UI.
+      const target = items[0];
       if (!target) {
         console.log(chrome.i18n.getMessage('noSuitableQualityDouyin'));
+      } else if (target.text === current) {
+        // Already at the top — do nothing.
       } else {
         target.el.click();
         console.log(chrome.i18n.getMessage('switchedToQualityDouyinLive') + ':', target.text);
