@@ -242,3 +242,37 @@ input:checked + .slider:before {
 .toast.show {
   opacity: 0.9;
 }
+
+/* 平台分组 */
+.platform-group {
+  margin-bottom: 12px;
+}
+
+.platform-group-header {
+  font-size: 11px;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+  padding-left: 4px;
+}
+
+.platform-group .setting-item {
+  margin-bottom: 6px;
+}
+
+.platform-group .setting-item:last-child {
+  margin-bottom: 0;
+}
+
+/* 嵌套子开关（B 站 VIP） */
+.setting-item.nested {
+  margin-left: 28px;
+  background: #fafafa;
+}
+
+.setting-item.nested.disabled {
+  opacity: 0.45;
+  pointer-events: none;
+}
