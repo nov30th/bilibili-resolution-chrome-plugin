@@ -24,7 +24,7 @@
   "content_scripts": [
     {
       "matches": ["https://www.bilibili.com/video/*"],
-      "js": ["content.js"],
+      "js": ["common/retry.js", "adapters/bilibili.js", "content.js"],
       "run_at": "document_idle"
     }
   ],
