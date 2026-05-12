@@ -7,6 +7,7 @@
   const ID = 'bilibili';
   const TOGGLE_KEY = 'enableBilibili';
   const PLATFORM_MSG_KEY = 'platformBilibili';
+  const { runWithRetry, alive, t, defer, guard } = window.__resolutionRetry;
 
   function matches(loc) {
     return loc.host === 'www.bilibili.com'
@@ -16,17 +17,17 @@
   function selectHighestQuality(config) {
     const qualityBtn = document.querySelector('.bpx-player-ctrl-quality');
     if (!qualityBtn) {
-      console.log(chrome.i18n.getMessage('qualityBtnNotFound'));
+      console.log(t('qualityBtnNotFound'));
       return false;
     }
     const qualityMenu = document.querySelector('.bpx-player-ctrl-quality-menu');
     if (!qualityMenu) {
-      console.log(chrome.i18n.getMessage('qualityMenuNotFound'));
+      console.log(t('qualityMenuNotFound'));
       return false;
     }
     const menuItems = qualityMenu.querySelectorAll('.bpx-player-ctrl-quality-menu-item');
     if (menuItems.length === 0) {
-      console.log(chrome.i18n.getMessage('qualityOptionsNotFound'));
+      console.log(t('qualityOptionsNotFound'));
       return false;
     }
 
@@ -47,21 +48,21 @@
     }
 
     if (!targetItem) {
-      console.log(chrome.i18n.getMessage('noSuitableQuality'));
+      console.log(t('noSuitableQuality'));
       return false;
     }
 
     if (highestValue === currentValue) {
       const txt = targetItem.querySelector('.bpx-player-ctrl-quality-text');
-      console.log(chrome.i18n.getMessage('alreadyHighestQuality') + ':', txt?.innerText);
+      console.log(t('alreadyHighestQuality') + ':', txt?.innerText);
       return true;
     }
 
     qualityBtn.dispatchEvent(new MouseEvent('mouseenter', { view: window, bubbles: true, cancelable: true }));
-    setTimeout(() => {
+    defer(() => {
       targetItem.click();
       const txt = targetItem.querySelector('.bpx-player-ctrl-quality-text');
-      console.log(chrome.i18n.getMessage('switchedToQuality') + ':', txt?.innerText);
+      console.log(t('switchedToQuality') + ':', txt?.innerText);
       qualityBtn.dispatchEvent(new MouseEvent('mouseleave', { view: window, bubbles: true, cancelable: true }));
     }, 100);
     return true;
@@ -70,32 +71,31 @@
   let currentConfig = null;
 
   function waitAndSelect() {
-    const { runWithRetry } = window.__resolutionRetry;
     runWithRetry(() => {
       const player = document.querySelector('.bpx-player-container');
       const qualityBtn = document.querySelector('.bpx-player-ctrl-quality');
       const qualityMenu = document.querySelector('.bpx-player-ctrl-quality-menu');
       if (!(player && qualityBtn && qualityMenu)) return false;
       // Player present — do a short settle, then attempt selection.
-      setTimeout(() => selectHighestQuality(currentConfig), 1000);
+      defer(() => selectHighestQuality(currentConfig), 1000);
       return true;
     }, {
       intervalMs: 1000,
       maxRetries: 10,
       onRetry: (n, max, ms) => console.log(
-        chrome.i18n.getMessage('playerNotReadyRetry', [String(ms), String(n), String(max)])
+        t('playerNotReadyRetry', [String(ms), String(n), String(max)])
       ),
-      onTimeout: () => console.log(chrome.i18n.getMessage('playerLoadTimeout'))
+      onTimeout: () => console.log(t('playerLoadTimeout'))
     });
   }
 
   function init(config) {
     currentConfig = config;
-    console.log(chrome.i18n.getMessage('configLoaded') + ':', config);
+    console.log(t('configLoaded') + ':', config);
 
     waitAndSelect();
 
-    const observer = new MutationObserver((mutations) => {
+    const observer = new MutationObserver(guard((mutations) => {
       for (const m of mutations) {
         if (m.type !== 'childList') continue;
         for (const node of m.addedNodes) {
@@ -104,32 +104,32 @@
             node.classList.contains('bpx-player-container')
             || (node.querySelector && node.querySelector('.bpx-player-container'))
           )) {
-            console.log(chrome.i18n.getMessage('playerDetected'));
-            setTimeout(() => waitAndSelect(), 1000);
+            console.log(t('playerDetected'));
+            defer(() => waitAndSelect(), 1000);
             return;
           }
         }
       }
-    });
+    }));
     observer.observe(document.body, { childList: true, subtree: true });
 
     let lastUrl = location.href;
     const titleEl = document.querySelector('head title');
     if (titleEl) {
-      const urlObserver = new MutationObserver(() => {
+      const urlObserver = new MutationObserver(guard(() => {
         if (location.href !== lastUrl) {
           lastUrl = location.href;
-          console.log(chrome.i18n.getMessage('videoSwitchDetected'));
-          setTimeout(() => waitAndSelect(), 2000);
+          console.log(t('videoSwitchDetected'));
+          defer(() => waitAndSelect(), 2000);
         }
-      });
+      }));
       urlObserver.observe(titleEl, { childList: true, characterData: true, subtree: true });
     }
   }
 
   function onConfigChange(newConfig) {
     currentConfig = { ...currentConfig, ...newConfig };
-    console.log(chrome.i18n.getMessage('configUpdated') + ':', currentConfig);
+    console.log(t('configUpdated') + ':', currentConfig);
     waitAndSelect();
   }
 

@@ -15,48 +15,58 @@
     return;
   }
 
-  console.log(chrome.i18n.getMessage('pluginLoaded'), '[' + adapter.id + ']');
+  const { t } = window.__resolutionRetry;
+  console.log(t('pluginLoaded'), '[' + adapter.id + ']');
 
   let isRunning = false;
 
   function start() {
-    chrome.storage.sync.get(null, (result) => {
-      const platformEnabled = result[adapter.toggleKey] !== false; // default true
-      if (!platformEnabled) {
-        console.log('[resolution] adapter disabled by user:', adapter.id);
-        return;
-      }
-      isRunning = true;
-      adapter.init({
-        enableVipQuality: !!result.enableVipQuality,
-        autoRetry: true,
-        maxRetries: 10,
-        retryInterval: 1000
+    try {
+      chrome.storage.sync.get(null, (result) => {
+        if (chrome.runtime.lastError) return;
+        const platformEnabled = result[adapter.toggleKey] !== false; // default true
+        if (!platformEnabled) {
+          console.log('[resolution] adapter disabled by user:', adapter.id);
+          return;
+        }
+        isRunning = true;
+        adapter.init({
+          enableVipQuality: !!result.enableVipQuality,
+          autoRetry: true,
+          maxRetries: 10,
+          retryInterval: 1000
+        });
       });
-    });
+    } catch (_) {
+      // Extension context invalidated before we could read storage.
+    }
   }
 
   start();
 
-  chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.action === 'selectQuality') {
-      if (isRunning) {
-        adapter.selectHighest();
-        sendResponse({ status: 'started' });
-      } else {
-        sendResponse({ status: 'disabled' });
+  try {
+    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+      if (request.action === 'selectQuality') {
+        if (isRunning) {
+          adapter.selectHighest();
+          sendResponse({ status: 'started' });
+        } else {
+          sendResponse({ status: 'disabled' });
+        }
       }
-    }
-    return true;
-  });
+      return true;
+    });
 
-  chrome.storage.onChanged.addListener((changes, namespace) => {
-    if (namespace !== 'sync') return;
-    // VIP toggle only affects Bilibili adapter — let it react via onConfigChange.
-    if (changes.enableVipQuality && isRunning && typeof adapter.onConfigChange === 'function') {
-      adapter.onConfigChange({ enableVipQuality: changes.enableVipQuality.newValue });
-    }
-    // Platform toggle changes take effect on next page load — we don't
-    // hot-detach observers because that risks leaving partial listeners.
-  });
+    chrome.storage.onChanged.addListener((changes, namespace) => {
+      if (namespace !== 'sync') return;
+      // VIP toggle only affects Bilibili adapter — let it react via onConfigChange.
+      if (changes.enableVipQuality && isRunning && typeof adapter.onConfigChange === 'function') {
+        adapter.onConfigChange({ enableVipQuality: changes.enableVipQuality.newValue });
+      }
+      // Platform toggle changes take effect on next page load — we don't
+      // hot-detach observers because that risks leaving partial listeners.
+    });
+  } catch (_) {
+    // Extension context invalidated — listeners can't be registered.
+  }
 })();
