@@ -170,5 +170,83 @@
   "videoSwitchDetected": {
     "message": "检测到视频切换",
     "description": "Console message when video switch is detected"
+  },
+  "platformBilibili": {
+    "message": "B站",
+    "description": "Platform name: Bilibili"
+  },
+  "platformDouyinVideo": {
+    "message": "抖音视频",
+    "description": "Platform name: Douyin Video"
+  },
+  "platformDouyinLive": {
+    "message": "抖音直播",
+    "description": "Platform name: Douyin Live"
+  },
+  "groupBilibili": {
+    "message": "B 站",
+    "description": "Popup section header for Bilibili"
+  },
+  "groupDouyin": {
+    "message": "抖音",
+    "description": "Popup section header for Douyin"
+  },
+  "enableBilibiliLabel": {
+    "message": "在 B 站启用",
+    "description": "Label for the Bilibili platform toggle"
+  },
+  "enableDouyinVideoLabel": {
+    "message": "在抖音视频启用",
+    "description": "Label for the Douyin video platform toggle"
+  },
+  "enableDouyinLiveLabel": {
+    "message": "在抖音直播启用",
+    "description": "Label for the Douyin live platform toggle"
+  },
+  "statusEnabledOn": {
+    "message": "已启用 · $1",
+    "description": "Status text when an adapter is enabled on the current site; $1 is the platform name",
+    "placeholders": {
+      "platform": { "content": "$1", "example": "B站" }
+    }
+  },
+  "statusDisabledOn": {
+    "message": "已禁用 · $1",
+    "description": "Status text when an adapter is disabled on the current site; $1 is the platform name",
+    "placeholders": {
+      "platform": { "content": "$1", "example": "B站" }
+    }
+  },
+  "notOnSupportedSite": {
+    "message": "非支持的站点",
+    "description": "Status text when the current tab is not a supported site"
+  },
+  "footerAutoRunAll": {
+    "message": "在已启用的支持站点自动运行",
+    "description": "Footer text describing auto-run on enabled supported sites"
+  },
+  "switchedToQualityDouyinVideo": {
+    "message": "已切换抖音视频清晰度",
+    "description": "Console message when Douyin video quality is switched"
+  },
+  "switchedToQualityDouyinLive": {
+    "message": "已切换抖音直播清晰度",
+    "description": "Console message when Douyin live quality is switched"
+  },
+  "noSuitableQualityDouyin": {
+    "message": "未找到合适的抖音清晰度",
+    "description": "Console message when no suitable Douyin quality is found"
+  },
+  "douyinPlayerNotReady": {
+    "message": "抖音播放器未就绪",
+    "description": "Console message when the Douyin video player isn't ready yet"
+  },
+  "douyinLiveNotReady": {
+    "message": "抖音直播间未就绪",
+    "description": "Console message when the Douyin live room isn't ready yet"
+  },
+  "douyinPluginLoaded": {
+    "message": "抖音清晰度适配器已加载",
+    "description": "Console message when the Douyin adapter is loaded"
   }
 }

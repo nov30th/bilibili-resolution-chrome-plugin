@@ -170,5 +170,83 @@
   "videoSwitchDetected": {
     "message": "Video switch detected",
     "description": "Console message when video switch is detected"
+  },
+  "platformBilibili": {
+    "message": "Bilibili",
+    "description": "Platform name: Bilibili"
+  },
+  "platformDouyinVideo": {
+    "message": "Douyin Video",
+    "description": "Platform name: Douyin Video"
+  },
+  "platformDouyinLive": {
+    "message": "Douyin Live",
+    "description": "Platform name: Douyin Live"
+  },
+  "groupBilibili": {
+    "message": "Bilibili",
+    "description": "Popup section header for Bilibili"
+  },
+  "groupDouyin": {
+    "message": "Douyin",
+    "description": "Popup section header for Douyin"
+  },
+  "enableBilibiliLabel": {
+    "message": "Enable on Bilibili",
+    "description": "Label for the Bilibili platform toggle"
+  },
+  "enableDouyinVideoLabel": {
+    "message": "Enable on Douyin videos",
+    "description": "Label for the Douyin video platform toggle"
+  },
+  "enableDouyinLiveLabel": {
+    "message": "Enable on Douyin live",
+    "description": "Label for the Douyin live platform toggle"
+  },
+  "statusEnabledOn": {
+    "message": "Enabled · $1",
+    "description": "Status text when an adapter is enabled on the current site; $1 is the platform name",
+    "placeholders": {
+      "platform": { "content": "$1", "example": "Bilibili" }
+    }
+  },
+  "statusDisabledOn": {
+    "message": "Disabled · $1",
+    "description": "Status text when an adapter is disabled on the current site; $1 is the platform name",
+    "placeholders": {
+      "platform": { "content": "$1", "example": "Bilibili" }
+    }
+  },
+  "notOnSupportedSite": {
+    "message": "Not on a supported site",
+    "description": "Status text when the current tab is not a supported site"
+  },
+  "footerAutoRunAll": {
+    "message": "Runs automatically on enabled supported sites",
+    "description": "Footer text describing auto-run on enabled supported sites"
+  },
+  "switchedToQualityDouyinVideo": {
+    "message": "Switched Douyin video quality",
+    "description": "Console message when Douyin video quality is switched"
+  },
+  "switchedToQualityDouyinLive": {
+    "message": "Switched Douyin live quality",
+    "description": "Console message when Douyin live quality is switched"
+  },
+  "noSuitableQualityDouyin": {
+    "message": "No suitable Douyin quality found",
+    "description": "Console message when no suitable Douyin quality is found"
+  },
+  "douyinPlayerNotReady": {
+    "message": "Douyin player not ready",
+    "description": "Console message when the Douyin video player isn't ready yet"
+  },
+  "douyinLiveNotReady": {
+    "message": "Douyin live room not ready",
+    "description": "Console message when the Douyin live room isn't ready yet"
+  },
+  "douyinPluginLoaded": {
+    "message": "Douyin resolution adapter loaded",
+    "description": "Console message when the Douyin adapter is loaded"
   }
 }
