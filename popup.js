@@ -1,149 +1,175 @@
 // popup.js
+// Manages per-platform toggle state, platform-aware status indicator,
+// and routes the manual-trigger button to the active tab's adapter.
 
-// Initialize i18n
+// Platform detection (mirrors adapters/<site>.js `matches()` logic).
+function detectPlatform(url) {
+  if (!url) return null;
+  try {
+    const u = new URL(url);
+    if (u.host === 'www.bilibili.com' && u.pathname.startsWith('/video/')) {
+      return { id: 'bilibili', toggleKey: 'enableBilibili', labelKey: 'platformBilibili' };
+    }
+    if (u.host === 'live.douyin.com' && u.pathname.length > 1) {
+      return { id: 'douyinLive', toggleKey: 'enableDouyinLive', labelKey: 'platformDouyinLive' };
+    }
+    if (u.host === 'www.douyin.com') {
+      return { id: 'douyinVideo', toggleKey: 'enableDouyinVideo', labelKey: 'platformDouyinVideo' };
+    }
+  } catch (_) { /* ignore */ }
+  return null;
+}
+
 function initializeI18n() {
   document.querySelectorAll('[data-i18n]').forEach(element => {
     const key = element.getAttribute('data-i18n');
     const message = chrome.i18n.getMessage(key);
-    if (message) {
-      if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
-        element.placeholder = message;
-      } else {
-        element.textContent = message;
-      }
+    if (!message) return;
+    if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+      element.placeholder = message;
+    } else {
+      element.textContent = message;
     }
   });
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-  // Initialize i18n translations
+const TOGGLE_KEYS = ['enableBilibili', 'enableVipQuality', 'enableDouyinVideo', 'enableDouyinLive'];
+const TOGGLE_DEFAULTS = {
+  enableBilibili: true,
+  enableVipQuality: false,
+  enableDouyinVideo: true,
+  enableDouyinLive: true
+};
+
+document.addEventListener('DOMContentLoaded', function () {
   initializeI18n();
 
-  // Set version from manifest
   const manifest = chrome.runtime.getManifest();
-  const versionElement = document.getElementById('version');
-  versionElement.textContent = chrome.i18n.getMessage('footerVersionLabel') + ' ' + manifest.version;
+  document.getElementById('version').textContent =
+    chrome.i18n.getMessage('footerVersionLabel') + ' ' + manifest.version;
 
-  const enableVipQuality = document.getElementById('enableVipQuality');
-  const manualSelectBtn = document.getElementById('manualSelect');
-  const statusElement = document.getElementById('status');
-  
-  // 加载保存的设置
-  chrome.storage.sync.get(['enableVipQuality'], function(result) {
-    if (result.enableVipQuality !== undefined) {
-      enableVipQuality.checked = result.enableVipQuality;
+  const inputs = {
+    enableBilibili: document.getElementById('enableBilibili'),
+    enableVipQuality: document.getElementById('enableVipQuality'),
+    enableDouyinVideo: document.getElementById('enableDouyinVideo'),
+    enableDouyinLive: document.getElementById('enableDouyinLive')
+  };
+  const vipRow = document.getElementById('vipQualityRow');
+  const manualBtn = document.getElementById('manualSelect');
+  const statusEl = document.getElementById('status');
+
+  // Load saved toggles (default-true for the three new ones, default-false for VIP).
+  chrome.storage.sync.get(TOGGLE_KEYS, function (result) {
+    for (const key of TOGGLE_KEYS) {
+      const val = result[key] === undefined ? TOGGLE_DEFAULTS[key] : result[key];
+      inputs[key].checked = !!val;
     }
+    updateVipRowEnabled(inputs.enableBilibili.checked);
   });
-  
-  // 保存设置变更
-  enableVipQuality.addEventListener('change', function() {
-    const isEnabled = enableVipQuality.checked;
-    chrome.storage.sync.set({ enableVipQuality: isEnabled }, function() {
-      console.log(chrome.i18n.getMessage('settingSaved') + ': enableVipQuality =', isEnabled);
-      showToast(isEnabled ? chrome.i18n.getMessage('vipQualityEnabled') : chrome.i18n.getMessage('vipQualityDisabled'));
-    });
-  });
-  
-  // 手动触发选择最高清晰度
-  manualSelectBtn.addEventListener('click', async function() {
-    // 禁用按钮避免重复点击
-    manualSelectBtn.disabled = true;
-    manualSelectBtn.textContent = chrome.i18n.getMessage('executing');
 
-    try {
-      // 获取当前活动标签页
-      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  function updateVipRowEnabled(bilibiliOn) {
+    if (bilibiliOn) {
+      vipRow.classList.remove('disabled');
+      inputs.enableVipQuality.disabled = false;
+    } else {
+      vipRow.classList.add('disabled');
+      inputs.enableVipQuality.disabled = true;
+    }
+  }
 
-      // 检查是否在B站视频页面
-      if (!tab.url || !tab.url.includes('bilibili.com/video/')) {
-        showToast(chrome.i18n.getMessage('notBilibiliPage'));
-        statusElement.textContent = chrome.i18n.getMessage('notOnBilibiliPage');
-        statusElement.style.color = '#ff4d4f';
-        return;
-      }
-
-      // 向content script发送消息
-      chrome.tabs.sendMessage(tab.id, { action: 'selectQuality' }, function(response) {
-        if (chrome.runtime.lastError) {
-          console.error(chrome.i18n.getMessage('sendMessageFailed') + ':', chrome.runtime.lastError);
-          showToast(chrome.i18n.getMessage('executionFailed'));
-          statusElement.textContent = chrome.i18n.getMessage('executionFailedShort');
-          statusElement.style.color = '#ff4d4f';
+  // Persist each toggle on change.
+  for (const key of TOGGLE_KEYS) {
+    inputs[key].addEventListener('change', () => {
+      const val = inputs[key].checked;
+      chrome.storage.sync.set({ [key]: val }, () => {
+        if (key === 'enableVipQuality') {
+          showToast(val
+            ? chrome.i18n.getMessage('vipQualityEnabled')
+            : chrome.i18n.getMessage('vipQualityDisabled'));
         } else {
-          showToast(chrome.i18n.getMessage('selectingQuality'));
-          statusElement.textContent = chrome.i18n.getMessage('executionInProgress');
-          statusElement.style.color = '#faad14';
-
-          // 3秒后恢复状态
-          setTimeout(() => {
-            statusElement.textContent = chrome.i18n.getMessage('statusEnabled');
-            statusElement.style.color = '#52c41a';
-          }, 3000);
+          showToast(chrome.i18n.getMessage('settingSaved'));
         }
       });
-    } catch (error) {
-      console.error(chrome.i18n.getMessage('executionFailedShort') + ':', error);
-      showToast(chrome.i18n.getMessage('executionFailedShort'));
-      statusElement.textContent = chrome.i18n.getMessage('executionFailedShort');
-      statusElement.style.color = '#ff4d4f';
+      if (key === 'enableBilibili') {
+        updateVipRowEnabled(val);
+      }
+    });
+  }
+
+  // Manual trigger — route to whichever platform the active tab is on.
+  manualBtn.addEventListener('click', async () => {
+    manualBtn.disabled = true;
+    manualBtn.textContent = chrome.i18n.getMessage('executing');
+    try {
+      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      const platform = detectPlatform(tab?.url);
+      if (!platform) {
+        showToast(chrome.i18n.getMessage('notOnSupportedSite'));
+        return;
+      }
+      chrome.tabs.sendMessage(tab.id, { action: 'selectQuality' }, (response) => {
+        if (chrome.runtime.lastError) {
+          console.error(chrome.i18n.getMessage('sendMessageFailed'), chrome.runtime.lastError);
+          showToast(chrome.i18n.getMessage('executionFailed'));
+          statusEl.textContent = chrome.i18n.getMessage('executionFailedShort');
+          statusEl.style.color = '#ff4d4f';
+          return;
+        }
+        if (response?.status === 'disabled') {
+          showToast(chrome.i18n.getMessage('statusDisabledOn', [chrome.i18n.getMessage(platform.labelKey)]));
+          return;
+        }
+        showToast(chrome.i18n.getMessage('selectingQuality'));
+        statusEl.textContent = chrome.i18n.getMessage('executionInProgress');
+        statusEl.style.color = '#faad14';
+        setTimeout(() => refreshStatus(), 3000);
+      });
     } finally {
-      // 恢复按钮状态
       setTimeout(() => {
-        manualSelectBtn.disabled = false;
-        manualSelectBtn.textContent = chrome.i18n.getMessage('btnManualSelect');
+        manualBtn.disabled = false;
+        manualBtn.textContent = chrome.i18n.getMessage('btnManualSelect');
       }, 2000);
     }
   });
-  
-  // 检查当前页面状态
-  checkCurrentPage();
+
+  async function refreshStatus() {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    const platform = detectPlatform(tab?.url);
+    if (!platform) {
+      statusEl.textContent = chrome.i18n.getMessage('notOnSupportedSite');
+      statusEl.style.color = '#ff4d4f';
+      manualBtn.disabled = true;
+      return;
+    }
+    chrome.storage.sync.get([platform.toggleKey], (result) => {
+      const stored = result[platform.toggleKey];
+      const isEnabled = stored === undefined ? TOGGLE_DEFAULTS[platform.toggleKey] : stored;
+      const platformLabel = chrome.i18n.getMessage(platform.labelKey);
+      if (isEnabled) {
+        statusEl.textContent = chrome.i18n.getMessage('statusEnabledOn', [platformLabel]);
+        statusEl.style.color = '#52c41a';
+        manualBtn.disabled = false;
+      } else {
+        statusEl.textContent = chrome.i18n.getMessage('statusDisabledOn', [platformLabel]);
+        statusEl.style.color = '#faad14';
+        manualBtn.disabled = true;
+      }
+    });
+  }
+
+  refreshStatus();
 });
 
-// 检查当前页面是否为B站视频页面
-async function checkCurrentPage() {
-  try {
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    const statusElement = document.getElementById('status');
-    const manualSelectBtn = document.getElementById('manualSelect');
-
-    if (tab.url && tab.url.includes('bilibili.com/video/')) {
-      statusElement.textContent = chrome.i18n.getMessage('statusEnabled');
-      statusElement.style.color = '#52c41a';
-      manualSelectBtn.disabled = false;
-    } else {
-      statusElement.textContent = chrome.i18n.getMessage('notOnBilibiliPage');
-      statusElement.style.color = '#ff4d4f';
-      manualSelectBtn.disabled = true;
-    }
-  } catch (error) {
-    console.error(chrome.i18n.getMessage('executionFailedShort') + ':', error);
-  }
-}
-
-// 显示临时提示消息
 function showToast(message) {
-  // 移除已存在的toast
-  const existingToast = document.querySelector('.toast');
-  if (existingToast) {
-    existingToast.remove();
-  }
-  
-  // 创建新的toast
+  const existing = document.querySelector('.toast');
+  if (existing) existing.remove();
   const toast = document.createElement('div');
   toast.className = 'toast';
   toast.textContent = message;
   document.body.appendChild(toast);
-  
-  // 显示动画
-  setTimeout(() => {
-    toast.classList.add('show');
-  }, 10);
-  
-  // 3秒后消失
+  setTimeout(() => toast.classList.add('show'), 10);
   setTimeout(() => {
     toast.classList.remove('show');
-    setTimeout(() => {
-      toast.remove();
-    }, 300);
+    setTimeout(() => toast.remove(), 300);
   }, 2000);
 }
